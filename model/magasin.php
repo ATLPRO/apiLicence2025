@@ -43,7 +43,7 @@ public function createmagasin($codeMag, $nomMag, $adresseMag, $telMag){
 
     //modification des magasins
     public function updateMagasin($codeMag, $nomMag, $adresseMag, $telMag) {
-        $sql = "UPDATE " . $this->table . " SET nomMag = :nomMag, adresseMag = :adresseMag, telMag = :telMag,  WHERE codeMag = :codeMag";
+        $sql = "UPDATE " . $this->table . " SET nomMag = :nomMag, adresseMag = :adresseMag, telMag = :telMag, codeMag = :codeMag WHERE codeMag = :codeMag";
         $stmt = $this->db->prepare($sql);
         return $stmt->execute([
             ':nomMag' => $nomMag,
