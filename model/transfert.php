@@ -1,7 +1,7 @@
 <?php
 class transfert {
     private $db;
-    public $idT, $numT, $dateT, $idMagSrc, $idMagDest, $idPers, $lignes;
+    public $idT, $numT,$refT, $dateT, $idMagSrc, $idMagDest, $idPers, $lignes;
 
     public function __construct($db) {
         $this->db = $db;
@@ -11,11 +11,12 @@ class transfert {
         try {
             $this->db->beginTransaction();
 
-            $sql = "INSERT INTO transfert (numT, dateT, idMagSrc, idMagDest, idpers)
-                    VALUES (:numT, :dateT, :idMagSrc, :idMagDest, :idpers)";
+            $sql = "INSERT INTO transfert (numT,refT, dateT, idMagSrc, idMagDest, idpers)
+                    VALUES (:numT,:refT, :dateT, :idMagSrc, :idMagDest, :idpers)";
             $stmt = $this->db->prepare($sql);
             $stmt->execute([
                 ":numT" => $this->numT,
+                ":refT" => $this->refT,
                 ":dateT" => $this->dateT,
                 ":idMagSrc" => $this->idMagSrc,
                 ":idMagDest" => $this->idMagDest,

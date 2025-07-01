@@ -2,7 +2,6 @@
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-// Headers CORS (ajuste l'origine selon ton frontend)
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
@@ -11,52 +10,49 @@ header("Access-Control-Allow-Credentials: true");
 
 require_once "../../config/database.php";
 require_once "../../model/avoir.php";
-// Gestion de la prévol (OPTIONS)
+
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-    $clientData = json_decode(file_get_contents("php://input"));
+    $data = json_decode(file_get_contents("php://input"));
     $host = $_GET['host'];
     $dbname = $_GET['dbname'];
     $username = $_GET['username'];
     $password = $_GET['password'];
-   
- // Instancier la base de données avec les paramètres de connexion
- $database = new database($host, $dbname, $username, $password);
- $db = $database->getConnexion();
 
- // Commencer une transaction
- $db->beginTransaction();
-// Créer une instance de la classe famille
+    $database = new database($host, $dbname, $username, $password);
+    $db = $database->getConnexion();
+    $db->beginTransaction();
+
     $avoir = new avoir($db);
-    $data = json_decode(file_get_contents("php://input"));
+    $avoir->idArt = (int) $data->idArt;
+    $avoir->idU = (int) $data->idU;
+    $avoir->qteA = $data->qteA;
+    $avoir->puA = $data->puA;
 
-     // Remplir les propriétés de la famille
-    
-    $avoir->qteA = htmlspecialchars($data->qteA);
-    $avoir->puA = htmlspecialchars($data->puA);
-    $avoir->idArt = htmlspecialchars($data->idArt);
-    $avoir->idU = htmlspecialchars($data->idU);
+    $result = $avoir->updateAvoir();
 
-    $result=$avoir->updateAvoir();
-   
-    
     if ($result) {
-        // Toutes les opérations ont réussi, on valide la transaction
+        // Mettre à jour la table stocker (juste idU)
+        $queryStocker = "UPDATE stocker SET idU = :idU WHERE idArt = :idArt";
+        $stmtStocker = $db->prepare($queryStocker);
+        $stmtStocker->bindParam(":idU", $avoir->idU, PDO::PARAM_INT);
+        $stmtStocker->bindParam(":idArt", $avoir->idArt, PDO::PARAM_INT);
+        $stmtStocker->execute();
+
+        // Valider la transaction
         $db->commit();
         http_response_code(201);
-        echo json_encode(['message' => "avoir modifier avec succès"]);
+        echo json_encode(['message' => "Avoir et stocker modifiés avec succès"]);
     } else {
-        // Une opération a échoué, on annule la transaction
         $db->rollBack();
         http_response_code(503);
-        echo json_encode(['message' => "Échec de l'enregistrement de l'avoir"]);
+        echo json_encode(['message' => "Échec de la modification"]);
     }
-} 
- else {
+} else {
     http_response_code(405);
-    echo json_encode(['message' => "La méthode n'est pas autorisée"]);
+    echo json_encode(['message' => "Méthode non autorisée"]);
 }

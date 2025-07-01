@@ -27,6 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $transf = new transfert($db);
     $transf->numT = $data["numT"];
+     $transf->refT = $data["refT"];
     $transf->dateT = $data["dateT"];
     $transf->idMagSrc = $data["idMagSrc"];
     $transf->idMagDest = $data["idMagDest"];

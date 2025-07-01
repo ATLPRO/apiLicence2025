@@ -41,28 +41,27 @@ class avoir{
     // Vérifie si une ligne existe déjà pour cet article et cette unité
     $queryCheck = "SELECT COUNT(*) FROM $this->table WHERE idArt = :idArt AND idU = :idU";
     $stmtCheck = $this->db->prepare($queryCheck);
-    $stmtCheck->bindParam(":idArt", $this->idArt);
-    $stmtCheck->bindParam(":idU", $this->idU);
+    $stmtCheck->bindParam(":idArt", $this->idArt, PDO::PARAM_INT);
+    $stmtCheck->bindParam(":idU", $this->idU, PDO::PARAM_INT);
     $stmtCheck->execute();
     $exists = $stmtCheck->fetchColumn();
 
     if ($exists > 0) {
         // Si la ligne existe, faire un UPDATE
-        $queryUpdate = "UPDATE $this->table 
-                        SET qteA = :qteA, puA = :puA 
-                        WHERE idArt = :idArt AND idU = :idU";
-        $stmt = $this->db->prepare($queryUpdate);
+        $query = "UPDATE $this->table 
+                  SET qteA = :qteA, puA = :puA 
+                  WHERE idArt = :idArt AND idU = :idU";
     } else {
         // Sinon, faire un INSERT
-        $queryUpdate = "INSERT INTO $this->table (qteA, puA, idArt, idU) 
-                        VALUES (:qteA, :puA, :idArt, :idU)";
-        $stmt = $this->db->prepare($queryUpdate);
+        $query = "INSERT INTO $this->table (qteA, puA, idArt, idU) 
+                  VALUES (:qteA, :puA, :idArt, :idU)";
     }
 
+    $stmt = $this->db->prepare($query);
     $stmt->bindParam(":qteA", $this->qteA);
     $stmt->bindParam(":puA", $this->puA);
-    $stmt->bindParam(":idArt", $this->idArt);
-    $stmt->bindParam(":idU", $this->idU);
+    $stmt->bindParam(":idArt", $this->idArt, PDO::PARAM_INT);
+    $stmt->bindParam(":idU", $this->idU, PDO::PARAM_INT);
 
     return $stmt->execute();
 }

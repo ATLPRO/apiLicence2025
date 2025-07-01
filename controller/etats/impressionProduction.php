@@ -66,24 +66,24 @@ $pdf->Ln(5);
 // Tableau des matières premières
 $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(60, 10, utf8_decode('Désignation'), 1);
-$pdf->Cell(30, 10, utf8_decode('Qté'), 1);
+$pdf->Cell(40, 10, utf8_decode('Qté'), 1);
 $pdf->Cell(30, 10, 'PU', 1);
-$pdf->Cell(40, 10, 'Montant', 1);
+$pdf->Cell(50, 10, 'Montant', 1);
 $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 11);
 if (isset($data['matieres']) && is_array($data['matieres']) && count($data['matieres']) > 0) {
     foreach ($data['matieres'] as $m) {
         $pdf->Cell(60, 10, utf8_decode($m['designation']), 1);
-        $pdf->Cell(30, 10, $m['qteL'], 1);
+        $pdf->Cell(40, 10, $m['qteL'], 1);
         $pdf->Cell(30, 10, $m['puL'], 1);
-        $pdf->Cell(40, 10, $m['qteL'] * $m['puL'], 1);
+        $pdf->Cell(50, 10, $m['qteL'] * $m['puL'], 1);
         $pdf->Ln();
     }
 
     $pdf->SetFont('Arial', 'B', 11);
-    $pdf->Cell(120, 10, 'Total', 1);
-    $pdf->Cell(40, 10, $data['cout'] . ' FCFA', 1);
+    $pdf->Cell(130, 10, 'Total', 1);
+    $pdf->Cell(50, 10, $data['cout'] . ' FCFA', 1);
     // Total en lettres
 /* $pdf->Ln(10);
 $pdf->SetFont('Arial', '', 11);
